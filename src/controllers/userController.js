@@ -23,13 +23,15 @@ module.exports.newUser = (req, res) => {
 module.exports.login = async (req, res) => {
   const email = req.body.email;
 
-  const user = await User.findOne({ email }).exec((err, doc) =>
-    console.log(doc)
-  );
+  const user = await User.findOne({ email });
 
   console.log(user);
 
-  res.status(200).json(user);
+  res.status(200).json({
+    success: true,
+    message: "User in DB",
+    userId: user._id
+  });
 };
 
 module.exports.updatePass = async (req, res) => {
@@ -40,9 +42,7 @@ module.exports.updatePass = async (req, res) => {
 
   const userUpdate = await User.findById({ _id: id });
   userUpdate.password = newPassword;
-  //userUpdate.generateHash();
   await userUpdate.save();
-
   res.send(userUpdate);
 
   // User.findByIdAndUpdate(id, { password: newPassword }, (err, doc) => {
@@ -67,6 +67,7 @@ module.exports.updatePass = async (req, res) => {
 
 module.exports.logout = (req, res) => {
   res.json({
+    success: true,
     message: "User successfully Logout"
   });
 };
