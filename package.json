@@ -1,0 +1,24 @@
+{
+  "name": "sculptor-backend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:vbguard/sculptor-backend.git",
+  "author": "Viktor Bulvarenko <viktor@bulvarenko.pw>",
+  "license": "MIT",
+  "scripts": {
+    "start": "node ./src/index.js",
+    "dev": "nodemon ./src/index.js"
+  },
+  "dependencies": {
+    "bcrypt": "3.0.6",
+    "cors": "2.8.5",
+    "dotenv": "7.0.0",
+    "express": "4.16.4",
+    "jsonwebtoken": "8.5.1",
+    "mongoose": "5.5.1"
+  },
+  "devDependencies": {
+    "morgan": "1.9.1",
+    "nodemon": "1.18.11"
+  }
+}
