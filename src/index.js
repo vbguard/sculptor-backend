@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const app = express();
 const logger = require("morgan");
@@ -7,8 +8,10 @@ const mongoose = require("mongoose");
 
 const router = require("./routes/routes.js");
 
+const urlDb = process.env.URL_MONGODB;
+
 mongoose
-  .connect("mongodb://localhost:27017/sculptor", {
+  .connect(urlDb, {
     useNewUrlParser: true,
     useCreateIndex: true,
     useFindAndModify: false
@@ -31,6 +34,6 @@ app.use("/", express.static("public"));
 
 app.use("/api", router);
 
-app.listen(3000, () => {
-  console.log("Server start on 3000 port");
+app.listen(process.env.PORT, () => {
+  console.log(`Server start on ${process.env.PORT} port`);
 });

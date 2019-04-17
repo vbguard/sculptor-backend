@@ -1,5 +1,6 @@
 const User = require("../models/userModel.js");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 module.exports.newUser = (req, res) => {
   const data = {
@@ -23,15 +24,25 @@ module.exports.newUser = (req, res) => {
 module.exports.login = async (req, res) => {
   const email = req.body.email;
 
-  const user = await User.findOne({ email });
+  try {
+    const user = await User.findOne({ email });
 
-  console.log(user);
+    const token = jwt.sign({ user: user.email }, "secret_super_nano_KEY_MEGA", {
+      expiresIn: 3600
+    });
 
-  res.status(200).json({
-    success: true,
-    message: "User in DB",
-    userId: user._id
-  });
+    res.status(200).json({
+      success: true,
+      message: "User in DB",
+      userId: user._id,
+      token: token
+    });
+  } catch (err) {
+    res.status(404).json({
+      success: false,
+      message: err.message
+    });
+  }
 };
 
 module.exports.updatePass = async (req, res) => {
