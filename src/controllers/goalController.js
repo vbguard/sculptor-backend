@@ -58,6 +58,7 @@ module.exports.updateGoal = async (req, res) => {
 module.exports.getAllGoalsByOwnerId = async (req, res) => {
   // "_id": "5cb58d3bc12e6785d2c02b65"
   const ownerId = req.body.ownerId;
+  console.log(req.decoded.user);
 
   const getUserGoals = await Goal.find({ ownerId: ownerId });
 

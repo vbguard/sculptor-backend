@@ -10,6 +10,8 @@ module.exports.newUser = (req, res) => {
 
   const newUser = new User(data);
 
+  console.log(newUser);
+
   newUser.save((error, doc) => {
     if (error) {
       res.status(400).json({
@@ -23,19 +25,31 @@ module.exports.newUser = (req, res) => {
 
 module.exports.login = async (req, res) => {
   const email = req.body.email;
+  const password = req.body.password;
 
   try {
     const user = await User.findOne({ email });
 
-    const token = jwt.sign({ user: user.email }, "secret_super_nano_KEY_MEGA", {
-      expiresIn: 3600
-    });
+    user.comparePassword(password, (err, isMatch) => {
+      if (err) console.log(err);
+      if (isMatch) {
+        const token = jwt.sign(
+          { user: user.email },
+          "secret_super_nano_KEY_MEGA"
+        );
 
-    res.status(200).json({
-      success: true,
-      message: "User in DB",
-      userId: user._id,
-      token: token
+        res.status(200).json({
+          success: true,
+          message: "User in DB",
+          userId: user._id,
+          token: token
+        });
+      } else {
+        res.status(401).json({
+          success: false,
+          message: "Not valid password"
+        });
+      }
     });
   } catch (err) {
     res.status(404).json({

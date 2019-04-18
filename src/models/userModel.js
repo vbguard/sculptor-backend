@@ -21,14 +21,14 @@ const UserSchema = new Schema(
 );
 
 UserSchema.pre("save", function(next) {
-  // Документ юзера який зберігається
+  // об'єкт юзера який зберігається
   const user = this;
 
-  // isModified - провіряє чи поле значення змінилось - повертає буль (true or false)
+  // isModified - це метод mongoose.Document провіряє чи поле значення змінилось - повертає буль (true or false)
   // isNew - провіряє чи це новий документ - повертає буль (true or false)
   if (this.isModified("password") || this.isNew) {
     console.log(user.password);
-    bcrypt.genSalt(14, function(err, salt) {
+    bcrypt.genSalt(10, function(err, salt) {
       if (err) {
         return next(err);
       }
@@ -65,7 +65,7 @@ UserSchema.methods.validPassword = function(password) {
 UserSchema.methods.getJWT = function() {
   let expiration_time = parseInt(CONFIG.jwt_expiration);
   return (
-    "JWT " +
+    "Bearer " +
     jwt.sign(
       {
         user_id: this._id
