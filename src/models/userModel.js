@@ -6,13 +6,20 @@ const UserSchema = new Schema(
   {
     email: {
       type: String,
-      required: true,
       unique: true,
       index: true
     },
     password: {
-      type: String,
-      required: true
+      type: String
+    },
+    githubId: {
+      type: Number
+    },
+    name: {
+      type: String
+    },
+    avatar: {
+      type: String
     }
   },
   {
@@ -23,6 +30,10 @@ const UserSchema = new Schema(
 UserSchema.pre("save", function(next) {
   // об'єкт юзера який зберігається
   const user = this;
+  console.log(user);
+  if (!user.password) {
+    return next();
+  }
 
   // isModified - це метод mongoose.Document провіряє чи поле значення змінилось - повертає буль (true or false)
   // isNew - провіряє чи це новий документ - повертає буль (true or false)

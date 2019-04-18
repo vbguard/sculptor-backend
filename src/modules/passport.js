@@ -68,12 +68,25 @@ module.exports = function(passport) {
       {
         clientID: process.env.GITHUB_CLIENT_ID,
         clientSecret: process.env.GITHUB_CLIENT_SECRET,
-        callbackURL: "http://localhost:3000/api/auth/github/callback"
+        callbackURL: `http://localhost:${
+          process.env.PORT
+        }/api/auth/github/callback`
       },
       function(accessToken, refreshToken, profile, done) {
         console.log(profile);
-        User.findOrCreate({ githubId: profile.id }, function(err, user) {
+        User.findOne({ githubId: profile.id }, function(err, user) {
           console.log(user);
+          if (!user) {
+            const newUser = new User({
+              githubId: profile._json.id,
+              name: profile._json.name,
+              avatar: profile._json.avatar_url
+            });
+
+            newUser.save((err, user) => {
+              done(err, user);
+            });
+          }
           return done(err, user);
         });
       }
