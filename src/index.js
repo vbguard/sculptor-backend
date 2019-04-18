@@ -3,6 +3,7 @@ const express = require("express");
 const app = express();
 const logger = require("morgan");
 const cors = require("cors");
+const passport = require("passport");
 
 const mongoose = require("mongoose");
 
@@ -29,6 +30,13 @@ app.use(logger("tiny"));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cors());
+
+//Passport
+app.use(passport.initialize());
+app.use(passport.session());
+
+// Bring in defined Passport Strategy
+require("./modules/passport")(passport);
 
 app.use("/", express.static("public"));
 
