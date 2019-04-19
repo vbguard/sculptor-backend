@@ -15,6 +15,12 @@ const UserSchema = new Schema(
     githubId: {
       type: Number
     },
+    facebookId: {
+      type: String
+    },
+    googleId: {
+      type: String
+    },
     name: {
       type: String
     },

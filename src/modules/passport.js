@@ -2,6 +2,8 @@ const JwtStrategy = require("passport-jwt").Strategy;
 const ExtractJwt = require("passport-jwt").ExtractJwt;
 const LocalStrategy = require("passport-local").Strategy;
 const GitHubStrategy = require("passport-github2").Strategy;
+const FacebookStrategy = require("passport-facebook").Strategy;
+const GoogleStrategy = require("passport-google-oauth20").Strategy;
 
 const User = require("../models/userModel.js");
 
@@ -72,10 +74,14 @@ module.exports = function(passport) {
           process.env.PORT
         }/api/auth/github/callback`
       },
-      function(accessToken, refreshToken, profile, done) {
-        console.log(profile);
-        User.findOne({ githubId: profile.id }, function(err, user) {
-          console.log(user);
+      async function(accessToken, refreshToken, profile, done) {
+        try {
+          const user = await User.findOne({ githubId: profile.id });
+
+          if (user) {
+            return done(err, user);
+          }
+
           if (!user) {
             const newUser = new User({
               githubId: profile._json.id,
@@ -84,11 +90,77 @@ module.exports = function(passport) {
             });
 
             newUser.save((err, user) => {
-              done(err, user);
+              return done(err, user);
             });
           }
-          return done(err, user);
-        });
+        } catch (error) {
+          done(error, null);
+        }
+      }
+    )
+  );
+
+  passport.use(
+    new FacebookStrategy(
+      {
+        clientID: process.env.FACEBOOK_APP_ID,
+        clientSecret: process.env.FACEBOOK_APP_SECRET,
+        callbackURL: "http://localhost:8000/api/auth/facebook/callback"
+      },
+      async function(accessToken, refreshToken, profile, done) {
+        try {
+          const user = await User.findOne({ facebookId: profile.id });
+          if (user) {
+            return done(err, user);
+          }
+
+          if (!user) {
+            const newUser = await new User({
+              githubId: profile._json.id,
+              name: profile._json.name
+            });
+
+            newUser.save((err, user) => {
+              return done(err, user);
+            });
+          }
+        } catch (error) {
+          done(error, null);
+        }
+      }
+    )
+  );
+
+  passport.use(
+    new GoogleStrategy(
+      {
+        clientID: process.env.GOOGLE_CLIENT_ID,
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+        callbackURL: "http://localhost:8000/api/auth/google/callback"
+      },
+      async function(accessToken, refreshToken, profile, done) {
+        console.log(profile);
+        try {
+          const user = await User.findOne({ googleId: profile.id });
+
+          if (user) {
+            return done(err, user);
+          }
+
+          if (!user) {
+            const newUser = await new User({
+              googleId: profile._json.sub,
+              name: profile._json.name,
+              avatar: profile._json.picture
+            });
+
+            newUser.save((err, user) => {
+              return done(err, user);
+            });
+          }
+        } catch (error) {
+          done(error, null);
+        }
       }
     )
   );

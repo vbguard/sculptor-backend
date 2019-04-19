@@ -27,11 +27,27 @@ router.get(
     successRedirect: "/dashboard",
     failureRedirect: "/login"
   })
+);
+router.get(
+  "/auth/google",
+  passport.authenticate("google", { scope: ["profile"] })
+);
 
-  // function(req, res) {
-  //   // Successful authentication, redirect home.
-  //   res.redirect("/dashboard");
-  // }
+router.get(
+  "/auth/google/callback",
+  passport.authenticate("google", {
+    successRedirect: "/dashboard",
+    failureRedirect: "/login"
+  })
+);
+router.get("/auth/facebook", passport.authenticate("facebook"));
+
+router.get(
+  "/auth/facebook/callback",
+  passport.authenticate("facebook", {
+    successRedirect: "/dashboard",
+    failureRedirect: "/login"
+  })
 );
 
 // PROTECTED ROUTES
