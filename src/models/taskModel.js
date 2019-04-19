@@ -2,28 +2,80 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const TaskSchema = new Schema({
-  taskTitle: {
+  goalId: {
     type: String,
     required: true
   },
+  taskTitle: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  taskColor: {
+    type: String
+  },
   taskWeekRange: {
-    type: Number,
-    required: true
+    type: Array,
+    default: [
+      {
+        week: 1,
+        status: false
+      },
+      {
+        week: 2,
+        status: false
+      },
+      {
+        week: 3,
+        status: false
+      },
+      {
+        week: 4,
+        status: false
+      },
+      {
+        week: 5,
+        status: false
+      },
+      {
+        week: 6,
+        status: false
+      },
+      {
+        week: 7,
+        status: false
+      },
+      {
+        week: 8,
+        status: false
+      },
+      {
+        week: 9,
+        status: false
+      }
+    ]
   },
-  taskStartDate: {
-    type: Date
+  taskCreateDate: {
+    type: Date,
+    default: Date.now()
   },
-  taskFinishDate: {
-    type: Date
-  },
-  isTaskActive: {
-    type: Boolean,
-    default: false
-  },
-  isTaskPriority: {
+  taskActiveDates: [
+    {
+      date: {
+        type: Date
+      },
+      isDone: {
+        type: Boolean,
+        default: false
+      }
+    }
+  ],
+  isComplete: {
     type: Boolean,
     default: false
   }
 });
 
-module.exports = TaskSchema;
+const Task = mongoose.model("Task", TaskSchema);
+
+module.exports = Task;

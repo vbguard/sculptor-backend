@@ -7,10 +7,13 @@ const UserSchema = new Schema(
     email: {
       type: String,
       unique: true,
-      index: true
+      index: true,
+      lowercase: true,
+      trim: true
     },
     password: {
-      type: String
+      type: String,
+      trim: true
     },
     githubId: {
       type: Number
@@ -80,14 +83,14 @@ UserSchema.methods.validPassword = function(password) {
 };
 
 UserSchema.methods.getJWT = function() {
-  let expiration_time = parseInt(CONFIG.jwt_expiration);
+  let expiration_time = parseInt(process.env.JWT_EXPIRATION);
   return (
     "Bearer " +
     jwt.sign(
       {
         user_id: this._id
       },
-      CONFIG.jwt_encryption,
+      process.env.JWT_SECRET_KEY,
       {
         expiresIn: expiration_time
       }

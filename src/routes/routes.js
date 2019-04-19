@@ -54,10 +54,43 @@ router.get(
 
 // Routes for Goals manipulation
 // @POST /goal
-router.post("/goal", authCheck, goalController.createNewGoal);
-router.get("/goal", authCheck, goalController.getAllGoalsByOwnerId);
-router.delete("/goal", authCheck, goalController.deleteGoal);
+router.get(
+  "/goal",
+  passport.authenticate("jwt", { session: false }),
+  goalController.getAllGoalsByOwnerId
+);
+router.post(
+  "/goal",
+  passport.authenticate("jwt", { session: false }),
+  goalController.createNewGoal
+);
+router.put(
+  "/goal",
+  passport.authenticate("jwt", { session: false }),
+  goalController.updateGoal
+);
+router.delete(
+  "/goal",
+  passport.authenticate("jwt", { session: false }),
+  goalController.deleteGoal
+);
 
-router.get("/task", authCheck, taskController.getOneTask);
+router.get(
+  "/task",
+  passport.authenticate("jwt", { session: false }),
+  taskController.getOneTask
+);
+
+router.put(
+  "/task",
+  passport.authenticate("jwt", { session: false }),
+  taskController.updateTask
+);
+
+router.delete(
+  "/task",
+  passport.authenticate("jwt", { session: false }),
+  taskController.deleteTask
+);
 
 module.exports = router;

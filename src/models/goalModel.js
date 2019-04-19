@@ -5,22 +5,26 @@ const TasksSchema = require("./taskModel.js");
 const GoalSchema = new Schema({
   goalTitle: {
     type: String,
-    required: true
+    required: true,
+    trim: true
   },
-  goalDescription: {
-    type: String
+  goalMotivation: {
+    type: String,
+    trim: true
   },
   goalNumber: {
     type: Number,
-    default: 1
+    default: 1,
+    trim: true
   },
-  goalTasks: [TasksSchema],
+  goalTasks: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Task"
+    }
+  ],
   goalColor: {
     type: String
-  },
-  goalEdit: {
-    type: Boolean,
-    default: false
   },
   goalCompleted: {
     type: Boolean,

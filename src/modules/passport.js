@@ -13,6 +13,22 @@ module.exports = function(passport) {
   opts.secretOrKey = process.env.JWT_SECRET_KEY;
 
   passport.use(
+    new JwtStrategy(opts, function(jwt_payload, done) {
+      User.findOne({ _id: jwt_payload.user }, function(err, user) {
+        if (err) {
+          return done(err, false);
+        }
+        if (user) {
+          return done(null, user);
+        } else {
+          return done(null, false);
+          // or you could create a new account
+        }
+      });
+    })
+  );
+
+  passport.use(
     new LocalStrategy(
       {
         usernameField: "username",
@@ -21,10 +37,12 @@ module.exports = function(passport) {
       function(username, password, done) {
         User.findOne({ email: username }, function(err, user) {
           if (err) throw err;
+
           if (!user) {
             return done(null, false, { message: "Unknown User" });
           }
-          User.comparePassword(password, user.password, function(err, isMatch) {
+
+          user.comparePassword(password, function(err, isMatch) {
             if (err) throw err;
             if (isMatch) {
               return done(null, user);
@@ -46,24 +64,6 @@ module.exports = function(passport) {
       done(err, user);
     });
   });
-
-  passport.use(
-    new LocalStrategy(function(email, password, done) {
-      console.log(email, password);
-      User.findOne({ email }, function(err, user) {
-        if (err) {
-          return done(err);
-        }
-        if (!user) {
-          return done(null, false);
-        }
-        if (!user.validPassword(password)) {
-          return done(null, false);
-        }
-        return done(null, user);
-      });
-    })
-  );
 
   passport.use(
     new GitHubStrategy(
@@ -105,7 +105,9 @@ module.exports = function(passport) {
       {
         clientID: process.env.FACEBOOK_APP_ID,
         clientSecret: process.env.FACEBOOK_APP_SECRET,
-        callbackURL: "http://localhost:8000/api/auth/facebook/callback"
+        callbackURL: `http://localhost:${
+          process.env.PORT
+        }/api/auth/facebook/callback`
       },
       async function(accessToken, refreshToken, profile, done) {
         try {
@@ -136,7 +138,9 @@ module.exports = function(passport) {
       {
         clientID: process.env.GOOGLE_CLIENT_ID,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-        callbackURL: "http://localhost:8000/api/auth/google/callback"
+        callbackURL: `http://localhost:${
+          process.env.PORT
+        }/api/auth/google/callback`
       },
       async function(accessToken, refreshToken, profile, done) {
         console.log(profile);
