@@ -5,6 +5,7 @@ const logger = require("morgan");
 const cors = require("cors");
 const passport = require("passport");
 
+const swaggerDoc = require("./modules/swaggerDoc");
 const mongoose = require("mongoose");
 
 const router = require("./routes/routes.js");
@@ -37,6 +38,8 @@ app.use(passport.session());
 
 // Bring in defined Passport Strategy
 require("./modules/passport")(passport);
+
+swaggerDoc(app);
 
 app.use("/", express.static("public"));
 

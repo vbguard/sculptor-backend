@@ -22,7 +22,9 @@
     "passport-github2": "0.1.11",
     "passport-google-oauth": "2.0.0",
     "passport-jwt": "4.0.0",
-    "passport-local": "1.0.0"
+    "passport-local": "1.0.0",
+    "swagger-jsdoc": "3.2.9",
+    "swagger-ui-express": "4.0.2"
   },
   "devDependencies": {
     "morgan": "1.9.1",

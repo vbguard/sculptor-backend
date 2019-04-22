@@ -22,7 +22,11 @@ module.exports.newUser = (req, res) => {
         message: error.message
       });
     }
-    res.json(doc);
+    res.status(201).json({
+      success: true,
+      message: "User successful created",
+      userId: "doc._id"
+    });
   });
 };
 
@@ -36,6 +40,7 @@ module.exports.login = (req, res) => {
     (err, user, info) => {
       if (err || !user) {
         return res.status(400).json({
+          success: false,
           message: info ? info.message : "Login failed",
           user: user
         });
@@ -55,7 +60,7 @@ module.exports.login = (req, res) => {
             { user: user._id, email: user.email },
             process.env.JWT_SECRET_KEY
           );
-          
+
           return res.json({
             success: true,
             message: "Success Logined",
