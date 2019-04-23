@@ -10,10 +10,8 @@ const mongoose = require("mongoose");
 
 const router = require("./routes/routes.js");
 
-const urlDb = process.env.URL_MONGODB;
-
 mongoose
-  .connect(urlDb, {
+  .connect("mongodb://localhost:27017/sculptor", {
     useNewUrlParser: true,
     useCreateIndex: true,
     useFindAndModify: false

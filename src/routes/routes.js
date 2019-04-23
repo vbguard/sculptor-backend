@@ -159,7 +159,7 @@ router.get(
 // Routes for Goals manipulation
 // @POST /goal
 router.get(
-  "/goal",
+  "/goal/:userId",
   passport.authenticate("jwt", { session: false }),
   goalController.getAllGoalsByOwnerId
 );

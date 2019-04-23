@@ -1,5 +1,6 @@
 const Goal = require("../models/goalModel.js");
 const Task = require("../models/taskModel.js");
+const async = require("async");
 
 module.exports.createNewGoal = async (req, res) => {
   /*
@@ -80,25 +81,41 @@ module.exports.updateGoal = async (req, res) => {
 };
 
 module.exports.getAllGoalsByOwnerId = async (req, res) => {
-  const ownerId = req.body.userId;
+  const ownerId = req.params.userId;
+  console.log("userId: ", ownerId);
 
   const getUserGoals = await Goal.find({ ownerId: ownerId });
 
-  Task.populate(getUserGoals, { path: "goalTasks", model: "Task" }, function(
-    err,
-    goals
-  ) {
-    res.json({
-      success: true,
-      message: `User has some Goals`,
-      data: goals
-    });
-  });
+  Task.populate(
+    getUserGoals,
+    { path: "goalTasks", model: "Task" },
+    async function(err, goals) {
+      const goalsId = goals.map(goal => goal._id);
 
-  if (getUserGoals.length === 0) {
-    res.status(404).json({
-      success: false,
-      message: `This User don't have any Goals`
-    });
-  }
+      Task.find(
+        {
+          goalId: { $in: goalsId }
+        },
+        function(err, tasks) {
+          console.log("teams name  " + tasks);
+          // Goal.populate(tasks, { path: _id, model: "Goal" }, (err, tasss) => {
+          //   console.log(tasss);
+          // });
+          res.json({
+            success: true,
+            message: `User has some Goals`,
+            data: goals,
+            tasks: tasks
+          });
+        }
+      );
+
+      if (getUserGoals.length === 0) {
+        res.status(404).json({
+          success: false,
+          message: `This User don't have any Goals`
+        });
+      }
+    }
+  );
 };
