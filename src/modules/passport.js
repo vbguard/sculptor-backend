@@ -10,7 +10,7 @@ const User = require("../models/userModel.js");
 module.exports = function(passport) {
   const opts = {};
   opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
-  opts.secretOrKey = process.env.JWT_SECRET_KEY;
+  opts.secretOrKey = "secret_super_nano_KEY_MEGA";
 
   passport.use(
     new JwtStrategy(opts, function(jwt_payload, done) {
@@ -68,11 +68,9 @@ module.exports = function(passport) {
   passport.use(
     new GitHubStrategy(
       {
-        clientID: process.env.GITHUB_CLIENT_ID,
-        clientSecret: process.env.GITHUB_CLIENT_SECRET,
-        callbackURL: `http://localhost:${
-          process.env.PORT
-        }/api/auth/github/callback`
+        clientID: "a3cfb2a6ef8f0285d5f9",
+        clientSecret: "129e72baafa648a4dfd64a3fdd7f8391f8abcf52",
+        callbackURL: `https://sculptor.vbguard.dev/api/auth/github/callback`
       },
       async function(accessToken, refreshToken, profile, done) {
         try {
@@ -103,11 +101,9 @@ module.exports = function(passport) {
   passport.use(
     new FacebookStrategy(
       {
-        clientID: process.env.FACEBOOK_APP_ID,
-        clientSecret: process.env.FACEBOOK_APP_SECRET,
-        callbackURL: `http://localhost:${
-          process.env.PORT
-        }/api/auth/facebook/callback`
+        clientID: "543139662877063",
+        clientSecret: "e67db023591d9f166412a6edbb7ee70a",
+        callbackURL: `https://sculptor.vbguard.dev/api/auth/facebook/callback`
       },
       async function(accessToken, refreshToken, profile, done) {
         try {
@@ -136,11 +132,10 @@ module.exports = function(passport) {
   passport.use(
     new GoogleStrategy(
       {
-        clientID: process.env.GOOGLE_CLIENT_ID,
-        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-        callbackURL: `http://localhost:${
-          process.env.PORT
-        }/api/auth/google/callback`
+        clientID:
+          "688951936234-4iru87hiur6r0tb1bt6o6vnp52mn24kv.apps.googleusercontent.com",
+        clientSecret: "FjZN3FwmFdMqJMYhVskFuw0P",
+        callbackURL: `https://sculptor.vbguard.dev/api/auth/google/callback`
       },
       async function(accessToken, refreshToken, profile, done) {
         console.log(profile);

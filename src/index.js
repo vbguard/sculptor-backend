@@ -25,7 +25,7 @@ mongoose
     }
   );
 
-app.use(logger("tiny"));
+app.use(logger("dev"));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cors());

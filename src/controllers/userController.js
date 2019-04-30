@@ -58,7 +58,7 @@ module.exports.login = (req, res) => {
 
           const token = jwt.sign(
             { user: user._id, email: user.email },
-            process.env.JWT_SECRET_KEY
+            "secret_super_nano_KEY_MEGA"
           );
 
           return res.json({
