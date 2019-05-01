@@ -6,6 +6,7 @@ const goalController = require("../controllers/goalController.js");
 const taskController = require("../controllers/taskController.js");
 const passport = require("passport");
 
+// Some config for swagger
 /**
  * @swagger
  *
@@ -16,6 +17,7 @@ const passport = require("passport");
  *        scheme: bearer
  *        bearerFormat: JWT
  */
+
 // PUBLIC ROUTES
 // @POST /registration
 /**
@@ -67,6 +69,7 @@ const passport = require("passport");
  *                  example: "some error written here"
  */
 router.post("/register", userController.newUser);
+
 // @POST /login - auth
 /**
  * @swagger
@@ -234,6 +237,7 @@ router.get(
   passport.authenticate("jwt", { session: false }),
   goalController.getAllGoalsByOwnerId
 );
+
 /**
  * @swagger
  *
@@ -249,29 +253,140 @@ router.get(
  *           schema:
  *             type: object
  *             required:
- *              - username
- *              - password
+ *              - goalTitle
+ *              - goalNumber
+ *              - goalColor
+ *              - userId
  *             properties:
- *               username:
+ *               goalTitle:
  *                  type: string
- *                  example: "user@user.com"
+ *                  example: "Some title of string here"
+ *               goalMotivation:
+ *                  type: string
+ *                  example: "Some motivation of string here"
+ *               goalNumber:
+ *                  type: number
+ *                  example: 1
+ *                  default: 1
+ *               goalTasks:
+ *                  type: array
+ *                  items:
+ *                    type: object
+ *                    properties:
+ *                      taskTitle:
+ *                        type: string
+ *                        example: "some task title"
+ *                      taskWeekRange:
+ *                        type: array
+ *                        example: [{week: 1,status: false},{week: 2,status: false},{week: 3,status: false},{week: 4,status: false},{week: 5,status: false},{week: 6,status: false},{week: 7,status: false},{week: 8,status: false},{week: 9,status: false}]
+ *                        default: [{week: 1,status: false},{week: 2,status: false},{week: 3,status: false},{week: 4,status: false},{week: 5,status: false},{week: 6,status: false},{week: 7,status: false},{week: 8,status: false},{week: 9,status: false}]
+ *                      taskCreateDate:
+ *                        type: string
+ *                        format: date-time
+ *                        example: "2017-07-21T17:32:28Z"
+ *                      taskActiveDates:
+ *                        type: array
+ *                        items: 
+ *                          type: object
+ *                          properties:
+ *                            date:
+ *                              type: string
+ *                              format: date-time
+ *                              example: "2017-07-21T17:32:28Z"
+ *                            isDone:
+ *                              type: boolean
+ *                              default: false
+ *                              example: false
+ *                      isComplete:
+ *                        type: boolean
+ *                        default: false
+ *                        example: false 
+ *               goalColor:
+ *                  type: string
+ *                  expample: "#dee5e8"
+ *                  enum: ["#dee5e8","#ffe7d4","#f9c1ce","#cbe3f7","#9df1e4","#fff2b5","#f8d9f3","#dbc9f8","#c4f6cd","#b9f7fe"]
+ *               goalCompleted:
+ *                  type: boolean
+ *                  example: false
+ *                  default: false
+ *               userId:
+ *                  type: string
+ *                  format: id
+ *                  example: "3j338fjdj2892ikd"            
  *     responses:
  *       200:
- *         description: Return json with User data create
+ *         description: Return json with field data - New Goal Created
  *         content:
  *          application/json:
- *            schema:
- *              type: object
- *              properties:
+ *           schema:
+ *             type: object
+ *             properties:
  *                success:
  *                  type: boolean
  *                  example: true
- *                userId:
- *                  type: string
- *                  example: "5c9962d4dee9ba402c2a86f9"
- *                token:
- *                 type: string
- *                 example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjOTk2MmQ0ZGVlOWJhNDAyYzJhODZmOSIsImVtYWlsIjoiM3YyaWt0bzN3d3I0QHRlc3R0a2hpcy5jb20iLCJuYW1lIjoiVGVzdCBTdXBlIiwiaWF0IjoxNTUzNTU2MzA2LCJleHAiOjE1NTM1NjYzMDZ9.I2V0TAlpJQdLz0x03gpfJpEPhR17MBvIyFzI3WuVXY4"
+ *                  default: true
+ *                data:
+ *                  type: array
+ *                  items:
+ *                    type: object
+ *                    properties:
+ *                      _id:
+ *                          type: string
+ *                          example: "hs78383uhdhwu222r"
+ *                          format: id
+ *                      goalTitle:
+ *                          type: string
+ *                          example: "Some title of string here"
+ *                      goalMotivation:
+ *                        type: string
+ *                        example: "Some motivation of string here"
+ *                      goalNumber:
+ *                        type: number
+ *                        example: 1
+ *                        default: 1
+ *                      goalTasks:
+ *                        type: array
+ *                        items:
+ *                          type: object
+ *                          properties:
+ *                             _id:
+ *                               type: string
+ *                               format: id
+ *                               example: "533jdj344j4j3k22k"
+ *                             taskTitle:
+ *                               type: string
+ *                               example: "some task title"
+ *                             taskColor: 
+ *                               type: string
+ *                               expample: "#dee5e8"
+ *                               enum: ["#dee5e8","#ffe7d4","#f9c1ce","#cbe3f7","#9df1e4","#fff2b5","#f8d9f3","#dbc9f8","#c4f6cd","#b9f7fe"]
+ *                             taskWeekRange:
+ *                               type: array
+ *                               example: [{week: 1,status: false},{week: 2,status: false},{week: 3,status: false},{week: 4,status: false},{week: 5,status: false},{week: 6,status: false},{week: 7,status: false},{week: 8,status: false},{week: 9,status: false}]
+ *                               default: [{week: 1,status: false},{week: 2,status: false},{week: 3,status: false},{week: 4,status: false},{week: 5,status: false},{week: 6,status: false},{week: 7,status: false},{week: 8,status: false},{week: 9,status: false}]
+ *                             taskCreateDate:
+ *                               type: string
+ *                               format: date-time
+ *                               example: "2017-07-21T17:32:28Z"
+ *                             taskActiveDates:
+ *                               type: array
+ *                               example: []
+ *                             isComplete:
+ *                               type: boolean
+ *                               default: false
+ *                               example: false 
+ *                        goalColor:
+ *                          type: string
+ *                          expample: "#dee5e8"
+ *                          enum: ["#dee5e8","#ffe7d4","#f9c1ce","#cbe3f7","#9df1e4","#fff2b5","#f8d9f3","#dbc9f8","#c4f6cd","#b9f7fe"]
+ *                        goalCompleted:
+ *                          type: boolean
+ *                          example: false
+ *                          default: false
+ *                        userId:
+ *                          type: string
+ *                          format: id
+ *                          example: "3j338fjdj2892ikd"            
  *       400:
  *         description: If not correct data request
  *         content:
@@ -284,10 +399,7 @@ router.get(
  *                  example: false
  *                message:
  *                  type: string
- *                  example: "Incorrect email or password."
- *                userID:
- *                  type: boolean
- *                  example: false
+ *                  example: "some error message"
  */
 router.post(
   "/goal",

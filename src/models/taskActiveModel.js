@@ -3,13 +3,8 @@ const Schema = mongoose.Schema;
 
 const TaskActiveSchema = new Schema(
   {
-    taskId: {
-      type: String,
-      required: true
-    },
     date: {
-      type: Date,
-      required: true
+      type: Date
     },
     isDone: {
       type: Boolean,
@@ -21,6 +16,5 @@ const TaskActiveSchema = new Schema(
   }
 );
 
-const TaskActive = mongoose.model("TaskActive", TaskActiveSchema);
 
-module.exports = TaskActive;
+module.exports = TaskActiveSchema;
