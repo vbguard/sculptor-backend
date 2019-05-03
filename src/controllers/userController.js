@@ -1,5 +1,9 @@
 const User = require("../models/userModel.js");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const passport = require("passport");
+
+require("dotenv").config();
 
 module.exports.newUser = (req, res) => {
   const data = {
@@ -9,6 +13,8 @@ module.exports.newUser = (req, res) => {
 
   const newUser = new User(data);
 
+  console.log(newUser);
+
   newUser.save((error, doc) => {
     if (error) {
       res.status(400).json({
@@ -16,21 +22,92 @@ module.exports.newUser = (req, res) => {
         message: error.message
       });
     }
-    res.json(doc);
+    res.status(201).json({
+      success: true,
+      message: "User successful created",
+      userId: "doc._id"
+    });
   });
 };
 
-module.exports.login = async (req, res) => {
-  const email = req.body.email;
+// Login User and get him Token for access to some route action
+module.exports.login = (req, res) => {
+  passport.authenticate(
+    "local",
+    {
+      session: true
+    },
+    (err, user, info) => {
+      if (err || !user) {
+        return res.status(400).json({
+          success: false,
+          message: info ? info.message : "Login failed",
+          user: user
+        });
+      }
 
-  const user = await User.findOne({ email }).exec((err, doc) =>
-    console.log(doc)
-  );
+      req.login(
+        user,
+        {
+          session: false
+        },
+        err => {
+          if (err) {
+            res.send(err);
+          }
 
-  console.log(user);
+          const token = jwt.sign(
+            { user: user._id, email: user.email },
+            "secret_super_nano_KEY_MEGA"
+          );
 
-  res.status(200).json(user);
+          return res.json({
+            success: true,
+            message: "Success Logined",
+            userId: user._id,
+            token: token
+          });
+        }
+      );
+    }
+  )(req, res);
 };
+
+// module.exports.login = async (req, res) => {
+//   const email = req.body.email;
+//   const password = req.body.password;
+
+//   try {
+//     const user = await User.findOne({ email });
+
+//     user.comparePassword(password, (err, isMatch) => {
+//       if (err) console.log(err);
+//       if (isMatch) {
+//         const token = jwt.sign(
+//           { user: user.email },
+//           "secret_super_nano_KEY_MEGA"
+//         );
+
+//         res.status(200).json({
+//           success: true,
+//           message: "User in DB",
+//           userId: user._id,
+//           token: token
+//         });
+//       } else {
+//         res.status(401).json({
+//           success: false,
+//           message: "Not valid password"
+//         });
+//       }
+//     });
+//   } catch (err) {
+//     res.status(404).json({
+//       success: false,
+//       message: err.message
+//     });
+//   }
+// };
 
 module.exports.updatePass = async (req, res) => {
   const newPassword = req.body.newPassword;
@@ -40,9 +117,7 @@ module.exports.updatePass = async (req, res) => {
 
   const userUpdate = await User.findById({ _id: id });
   userUpdate.password = newPassword;
-  //userUpdate.generateHash();
   await userUpdate.save();
-
   res.send(userUpdate);
 
   // User.findByIdAndUpdate(id, { password: newPassword }, (err, doc) => {
@@ -67,6 +142,7 @@ module.exports.updatePass = async (req, res) => {
 
 module.exports.logout = (req, res) => {
   res.json({
+    success: true,
     message: "User successfully Logout"
   });
 };

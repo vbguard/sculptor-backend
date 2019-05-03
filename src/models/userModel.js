@@ -6,13 +6,29 @@ const UserSchema = new Schema(
   {
     email: {
       type: String,
-      required: true,
       unique: true,
-      index: true
+      index: true,
+      lowercase: true,
+      trim: true
     },
     password: {
       type: String,
-      required: true
+      trim: true
+    },
+    githubId: {
+      type: Number
+    },
+    facebookId: {
+      type: String
+    },
+    googleId: {
+      type: String
+    },
+    name: {
+      type: String
+    },
+    avatar: {
+      type: String
     }
   },
   {
@@ -21,14 +37,18 @@ const UserSchema = new Schema(
 );
 
 UserSchema.pre("save", function(next) {
-  // Документ юзера який зберігається
+  // об'єкт юзера який зберігається
   const user = this;
+  console.log(user);
+  if (!user.password) {
+    return next();
+  }
 
-  // isModified - провіряє чи поле значення змінилось - повертає буль (true or false)
+  // isModified - це метод mongoose.Document провіряє чи поле значення змінилось - повертає буль (true or false)
   // isNew - провіряє чи це новий документ - повертає буль (true or false)
   if (this.isModified("password") || this.isNew) {
     console.log(user.password);
-    bcrypt.genSalt(14, function(err, salt) {
+    bcrypt.genSalt(10, function(err, salt) {
       if (err) {
         return next(err);
       }
@@ -63,14 +83,14 @@ UserSchema.methods.validPassword = function(password) {
 };
 
 UserSchema.methods.getJWT = function() {
-  let expiration_time = parseInt(CONFIG.jwt_expiration);
+  let expiration_time = parseInt(process.env.JWT_EXPIRATION);
   return (
-    "JWT " +
+    "Bearer " +
     jwt.sign(
       {
         user_id: this._id
       },
-      CONFIG.jwt_encryption,
+      process.env.JWT_SECRET_KEY,
       {
         expiresIn: expiration_time
       }
