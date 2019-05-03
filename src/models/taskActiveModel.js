@@ -16,5 +16,4 @@ const TaskActiveSchema = new Schema(
   }
 );
 
-
 module.exports = TaskActiveSchema;
