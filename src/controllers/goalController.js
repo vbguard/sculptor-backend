@@ -89,10 +89,10 @@ module.exports.updateGoal = async (req, res) => {
 };
 
 module.exports.getAllGoalsByOwnerId = async (req, res) => {
-  const ownerId = req.params.userId;
-  console.log("userId: ", ownerId);
+  const userId = req.params.userId;
+  console.log("userId: ", userId);
 
-  const getUserGoals = await Goal.find({ ownerId: ownerId });
+  const getUserGoals = await Goal.find({ userId });
 
   Task.populate(getUserGoals, { path: "goalTasks", model: "Task" }, function(
     err,
