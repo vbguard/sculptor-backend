@@ -10,7 +10,7 @@ module.exports.createNewGoal = async (req, res) => {
    *  - goalTasks: [Task=>ref - save objectId]
    *  - goalColor: String
    *  - goalCompleted: Boolean, default: false
-   *  - ownerId: String, required: true
+   *  - userId: String, required: true
    */
 
   const data = req.body;

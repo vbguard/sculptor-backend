@@ -247,6 +247,17 @@ router.get(
  *       - https
  *     tags:
  *       - GOAL
+ *     summary: Add new Goal with tasks or without tasks.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: header
+ *         name: Authorization
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjOTk2MmQ0ZGVlOWJhNDAyYzJhODZmOSIsImVtYWlsIjoiM3YyaWt0bzN3d3I0QHRlc3R0a2hpcy5jb20iLCJuYW1lIjoiVGVzdCBTdXBlIiwiaWF0IjoxNTUzNTU3NzI0LCJleHAiOjE1NTM1Njc3MjR9.Yuqy_d1NheW5osTAdzjSUrgAurZtXIZMjQnpTTufzhs"
+ *         description: Example in headers request in fields Auth - Bearer eyJhbGciOiJIUzI1N...
  *     requestBody:
  *       content:
  *         application/json:
@@ -286,7 +297,7 @@ router.get(
  *                        example: "2017-07-21T17:32:28Z"
  *                      taskActiveDates:
  *                        type: array
- *                        items: 
+ *                        items:
  *                          type: object
  *                          properties:
  *                            date:
@@ -300,7 +311,7 @@ router.get(
  *                      isComplete:
  *                        type: boolean
  *                        default: false
- *                        example: false 
+ *                        example: false
  *               goalColor:
  *                  type: string
  *                  expample: "#dee5e8"
@@ -312,7 +323,7 @@ router.get(
  *               userId:
  *                  type: string
  *                  format: id
- *                  example: "3j338fjdj2892ikd"            
+ *                  example: "3j338fjdj2892ikd"
  *     responses:
  *       200:
  *         description: Return json with field data - New Goal Created
@@ -356,7 +367,7 @@ router.get(
  *                             taskTitle:
  *                               type: string
  *                               example: "some task title"
- *                             taskColor: 
+ *                             taskColor:
  *                               type: string
  *                               expample: "#dee5e8"
  *                               enum: ["#dee5e8","#ffe7d4","#f9c1ce","#cbe3f7","#9df1e4","#fff2b5","#f8d9f3","#dbc9f8","#c4f6cd","#b9f7fe"]
@@ -374,7 +385,7 @@ router.get(
  *                             isComplete:
  *                               type: boolean
  *                               default: false
- *                               example: false 
+ *                               example: false
  *                        goalColor:
  *                          type: string
  *                          expample: "#dee5e8"
@@ -386,7 +397,7 @@ router.get(
  *                        userId:
  *                          type: string
  *                          format: id
- *                          example: "3j338fjdj2892ikd"            
+ *                          example: "3j338fjdj2892ikd"
  *       400:
  *         description: If not correct data request
  *         content:
@@ -406,13 +417,108 @@ router.post(
   passport.authenticate("jwt", { session: false }),
   goalController.createNewGoal
 );
+
+/**
+ * @swagger
+ *
+ * /api/goal/{goalId}:
+ *   put:
+ *     schemes:
+ *       - https
+ *     tags:
+ *       - GOAL
+ *     summary: update Goal by goalId and with fields
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: goalId
+ *         required: true
+ *         type: string
+ *         schema:
+ *            type: string
+ *         description: The user ID.
+ *       - in: header
+ *         name: Authorization
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjOTk2MmQ0ZGVlOWJhNDAyYzJhODZmOSIsImVtYWlsIjoiM3YyaWt0bzN3d3I0QHRlc3R0a2hpcy5jb20iLCJuYW1lIjoiVGVzdCBTdXBlIiwiaWF0IjoxNTUzNTU3NzI0LCJleHAiOjE1NTM1Njc3MjR9.Yuqy_d1NheW5osTAdzjSUrgAurZtXIZMjQnpTTufzhs"
+ *         description: Example in headers request in fields Auth - Bearer eyJhbGciOiJIUzI1N...
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *              - fieldsUpdate
+ *             properties:
+ *               fieldsUpdate:
+ *                  type: object
+ *                  example: {"write here key(some key is a field must update)": "value(value updated)", ...: ...}
+ *     responses:
+ *       200:
+ *         description: Return json Updated Goal
+ *         content:
+ *          application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *                success:
+ *                  type: boolean
+ *                  example: true
+ *                  default: true
+ *
+ */
 router.put(
-  "/goal",
+  "/goal/:goalId",
   passport.authenticate("jwt", { session: false }),
   goalController.updateGoal
 );
+
+/**
+ * @swagger
+ *
+ * /api/goal/{goalId}:
+ *   delete:
+ *     schemes:
+ *       - https
+ *     tags:
+ *       - GOAL
+ *     summary: Delete goal by goalId
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: goalId
+ *         required: true
+ *         type: string
+ *         schema:
+ *            type: string
+ *         description: The goal ID.
+ *       - in: header
+ *         name: Authorization
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjOTk2MmQ0ZGVlOWJhNDAyYzJhODZmOSIsImVtYWlsIjoiM3YyaWt0bzN3d3I0QHRlc3R0a2hpcy5jb20iLCJuYW1lIjoiVGVzdCBTdXBlIiwiaWF0IjoxNTUzNTU3NzI0LCJleHAiOjE1NTM1Njc3MjR9.Yuqy_d1NheW5osTAdzjSUrgAurZtXIZMjQnpTTufzhs"
+ *         description: Example in headers request in fields Auth - Bearer eyJhbGciOiJIUzI1N...
+ *     responses:
+ *       200:
+ *         description: Return json status removed Goal
+ *         content:
+ *          application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *                success:
+ *                  type: boolean
+ *                  example: true
+ *                  default: true
+ *
+ */
 router.delete(
-  "/goal",
+  "/goal/:goalId",
   passport.authenticate("jwt", { session: false }),
   goalController.deleteGoal
 );
@@ -423,14 +529,107 @@ router.get(
   taskController.getOneTask
 );
 
+/**
+ * @swagger
+ *
+ * /api/task/{taskId}:
+ *   put:
+ *     schemes:
+ *       - https
+ *     tags:
+ *       - TASK
+ *     summary: update Task by taskId
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: taskId
+ *         required: true
+ *         type: string
+ *         schema:
+ *            type: string
+ *         description: The task ID.
+ *       - in: header
+ *         name: Authorization
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjOTk2MmQ0ZGVlOWJhNDAyYzJhODZmOSIsImVtYWlsIjoiM3YyaWt0bzN3d3I0QHRlc3R0a2hpcy5jb20iLCJuYW1lIjoiVGVzdCBTdXBlIiwiaWF0IjoxNTUzNTU3NzI0LCJleHAiOjE1NTM1Njc3MjR9.Yuqy_d1NheW5osTAdzjSUrgAurZtXIZMjQnpTTufzhs"
+ *         description: Example in headers request in fields Auth - Bearer eyJhbGciOiJIUzI1N...
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *              - fieldsUpdate
+ *             properties:
+ *               fieldsUpdate:
+ *                  type: object
+ *                  example: {"write here key(some key is a field must update)": "value(value updated)", ...: ...}
+ *     responses:
+ *       200:
+ *         description: Return json status updated Task
+ *         content:
+ *          application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *                success:
+ *                  type: boolean
+ *                  example: true
+ *                  default: true
+ *
+ */
 router.put(
-  "/task",
+  "/task/:taskId",
   passport.authenticate("jwt", { session: false }),
   taskController.updateTask
 );
 
+/**
+ * @swagger
+ *
+ * /api/task/{taskId}:
+ *   delete:
+ *     schemes:
+ *       - https
+ *     tags:
+ *       - TASK
+ *     summary: Delete task
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: taskId
+ *         required: true
+ *         type: string
+ *         schema:
+ *            type: string
+ *         description: The task ID.
+ *       - in: header
+ *         name: Authorization
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjOTk2MmQ0ZGVlOWJhNDAyYzJhODZmOSIsImVtYWlsIjoiM3YyaWt0bzN3d3I0QHRlc3R0a2hpcy5jb20iLCJuYW1lIjoiVGVzdCBTdXBlIiwiaWF0IjoxNTUzNTU3NzI0LCJleHAiOjE1NTM1Njc3MjR9.Yuqy_d1NheW5osTAdzjSUrgAurZtXIZMjQnpTTufzhs"
+ *         description: Example in headers request in fields Auth - Bearer eyJhbGciOiJIUzI1N...
+ *     responses:
+ *       200:
+ *         description: Return json status removed Task
+ *         content:
+ *          application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *                success:
+ *                  type: boolean
+ *                  example: true
+ *                  default: true
+ *
+ */
 router.delete(
-  "/task",
+  "/task/:taskId",
   passport.authenticate("jwt", { session: false }),
   taskController.deleteTask
 );
