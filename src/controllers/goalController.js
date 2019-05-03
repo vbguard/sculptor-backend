@@ -43,9 +43,15 @@ module.exports.createNewGoal = async (req, res) => {
           message: err.message
         });
       }
-      res.status(200).json({
-        success: true,
-        data: goal
+
+      Task.populate(goal, { path: "goalTasks", model: "Task" }, function(
+        err,
+        goalTask
+      ) {
+        res.status(200).json({
+          success: true,
+          data: goalTask
+        });
       });
     });
   });
@@ -70,7 +76,7 @@ module.exports.deleteGoal = async (req, res) => {
 };
 
 module.exports.updateGoal = async (req, res) => {
-  const goalId = req.body.goalId;
+  const goalId = req.params.goalId;
   const fieldsToUpdate = req.body.fieldsToUpdate;
 
   try {
