@@ -13,6 +13,7 @@ module.exports.createNewGoal = async (req, res) => {
    *  - ownerId: String, required: true
    */
 
+  console.log(req.body);
   const data = req.body;
 
   const goalDataNew = {
