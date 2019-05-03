@@ -62,7 +62,10 @@ const TaskSchema = new Schema(
       type: Date,
       default: Date.now()
     },
-    taskActiveDates: [TaskActiveSchema],
+    taskActiveDates: {
+      type: [TaskActiveSchema],
+      default: []
+    },
     isComplete: {
       type: Boolean,
       default: false

@@ -15,16 +15,9 @@ module.exports.createNewGoal = async (req, res) => {
    */
 
   const data = req.body.data;
-  const ownerId = req.body.userId;
 
   //Створюємо новий документ ( Goal - Ціль )
-  const newGoal = await new Goal({
-    goalTitle: data.goalTitle,
-    goalNumber: data.goalNumber,
-    goalMotivation: data.goalMotivation,
-    goalColor: data.goalColor,
-    ownerId
-  });
+  const newGoal = await new Goal({ data });
 
   const goalId = newGoal._id;
 
@@ -37,8 +30,16 @@ module.exports.createNewGoal = async (req, res) => {
   await Task.insertMany(data.goalTasks, (err, docs) => {
     newGoal.goalTasks = [...docs.map(task => task._id)];
     newGoal.save((err, goal) => {
-      if (err) console.log(err);
-      res.json(goal);
+      if (err) {
+        res.json({
+          success: false,
+          message: err.message
+        });
+      };
+      res.status(200).json({
+        success: true,
+        data: goal
+      });
     });
   });
 };

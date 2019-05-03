@@ -3,13 +3,8 @@ const Schema = mongoose.Schema;
 
 const TaskActiveSchema = new Schema(
   {
-    taskId: {
-      type: String,
-      required: true
-    },
     date: {
-      type: Date,
-      required: true
+      type: Date
     },
     isDone: {
       type: Boolean,
