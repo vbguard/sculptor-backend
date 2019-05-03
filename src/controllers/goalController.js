@@ -1,6 +1,5 @@
 const Goal = require("../models/goalModel.js");
 const Task = require("../models/taskModel.js");
-const async = require("async");
 
 module.exports.createNewGoal = async (req, res) => {
   /*
@@ -14,10 +13,18 @@ module.exports.createNewGoal = async (req, res) => {
    *  - ownerId: String, required: true
    */
 
-  const data = req.body.data;
+  const data = req.body;
+
+  const goalDataNew = {
+    goalTitle: data.goalTitle,
+    goalMotivation: data.goalMotivation,
+    goalNumber: data.goalNumber,
+    goalColor: data.goalColor,
+    userId: data.userId
+  };
 
   //Створюємо новий документ ( Goal - Ціль )
-  const newGoal = await new Goal({ data });
+  const newGoal = await new Goal(goalDataNew);
 
   const goalId = newGoal._id;
 
@@ -35,7 +42,7 @@ module.exports.createNewGoal = async (req, res) => {
           success: false,
           message: err.message
         });
-      };
+      }
       res.status(200).json({
         success: true,
         data: goal
