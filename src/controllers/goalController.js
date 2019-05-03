@@ -28,14 +28,38 @@ module.exports.createNewGoal = async (req, res) => {
 
   const goalId = newGoal._id;
 
-  data.goalTasks = data.goalTasks.map(task => {
-    return { ...task, goalId, taskColor: data.goalColor };
-  });
+  if (data.goalTasks) {
+    data.goalTasks = data.goalTasks.map(task => {
+      return { ...task, goalId, taskColor: data.goalColor };
+    });
 
-  // .insertMany - метод для створення багато документів у відповідній колекції
-  // приймає першим параметром масив або об'єкт данних «Array|Object|*»
-  await Task.insertMany(data.goalTasks, (err, docs) => {
-    newGoal.goalTasks = [...docs.map(task => task._id)];
+    // .insertMany - метод для створення багато документів у відповідній колекції
+    // приймає першим параметром масив або об'єкт данних «Array|Object|*»
+    await Task.insertMany(data.goalTasks, (err, docs) => {
+      newGoal.goalTasks = [...docs.map(task => task._id)];
+      newGoal.save((err, goal) => {
+        if (err) {
+          res.json({
+            success: false,
+            message: err.message
+          });
+        }
+
+        Task.populate(goal, { path: "goalTasks", model: "Task" }, function(
+          err,
+          goalTask
+        ) {
+          res.status(200).json({
+            success: true,
+            data: goalTask
+          });
+        });
+      });
+    });
+  }
+
+  if (!data.goalTasks) {
+    newGoal.goalTasks = [];
     newGoal.save((err, goal) => {
       if (err) {
         res.json({
@@ -43,18 +67,13 @@ module.exports.createNewGoal = async (req, res) => {
           message: err.message
         });
       }
-
-      Task.populate(goal, { path: "goalTasks", model: "Task" }, function(
-        err,
-        goalTask
-      ) {
-        res.status(200).json({
-          success: true,
-          data: goalTask
-        });
+      res.status(200).json({
+        success: true,
+        message: "create only Goal without tasks",
+        data: goal
       });
     });
-  });
+  }
 };
 
 module.exports.deleteGoal = async (req, res) => {
