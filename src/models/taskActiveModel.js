@@ -21,6 +21,4 @@ const TaskActiveSchema = new Schema(
   }
 );
 
-const TaskActive = mongoose.model("TaskActive", TaskActiveSchema);
-
-module.exports = TaskActive;
+module.exports = TaskActiveSchema;

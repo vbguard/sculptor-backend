@@ -97,9 +97,6 @@ module.exports.getAllGoalsByOwnerId = async (req, res) => {
         goalId: { $in: goalsId }
       },
       function(err, tasks) {
-        // Goal.populate(tasks, { path: _id, model: "Goal" }, (err, tasss) => {
-        //   console.log(tasss);
-        // });
         res.json({
           success: true,
           message: `User has some Goals`,

@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-const TaskModel = require("./taskActiveModel");
+const TaskActiveSchema = require("./taskActiveModel");
 
 const TaskSchema = new Schema(
   {
@@ -62,12 +62,7 @@ const TaskSchema = new Schema(
       type: Date,
       default: Date.now()
     },
-    taskActiveDates: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "TaskActive"
-      }
-    ],
+    taskActiveDates: [TaskActiveSchema],
     isComplete: {
       type: Boolean,
       default: false

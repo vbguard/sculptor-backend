@@ -44,7 +44,7 @@ const GoalSchema = new Schema({
     type: Boolean,
     default: false
   },
-  ownerId: {
+  userId: {
     type: String,
     required: true
   }

@@ -11,11 +11,14 @@ const mongoose = require("mongoose");
 const router = require("./routes/routes.js");
 
 mongoose
-  .connect("mongodb://localhost:27017/sculptor", {
-    useNewUrlParser: true,
-    useCreateIndex: true,
-    useFindAndModify: false
-  })
+  .connect(
+    "mongodb+srv://sculptor:sculptor34GH@sculptor-dqg3i.mongodb.net/sculptor?retryWrites=true",
+    {
+      useNewUrlParser: true,
+      useCreateIndex: true,
+      useFindAndModify: false
+    }
+  )
   .then(
     () => {
       console.log("MongoDB connected...");
@@ -43,8 +46,8 @@ app.use("/", express.static("public"));
 
 app.use("/api", router);
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8000;
 
 app.listen(PORT, () => {
-  console.log(`Server start on ${process.env.PORT} port`);
+  console.log(`Server start on ${PORT} port`);
 });
