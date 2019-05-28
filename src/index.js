@@ -4,7 +4,6 @@ const app = express();
 const logger = require("morgan");
 const cors = require("cors");
 const passport = require("passport");
-
 const swaggerDoc = require("./modules/swaggerDoc");
 const mongoose = require("mongoose");
 
