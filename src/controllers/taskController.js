@@ -10,24 +10,31 @@ module.exports.getOneTask = async (req, res) => {
 };
 
 module.exports.deleteTask = async (req, res) => {
-  const taskId = req.body.taskId;
-  const goalId = req.body.goalId;
+  const taskId = req.params.taskId;
 
+  const getTaskById = await Task.findById(taskId);
+
+  if (getTaskById) {
+    console.log(getTaskById);
+  }
   const deleteTask = await Task.findByIdAndDelete(taskId);
+
   const updateGoal = await Goal.findOneAndUpdate(
-    { _id: goalId },
-    { $pull: { goalTasks: taskId } }
+    { _id: getTaskById.goalId },
+    { $pull: { goalTasks: taskId } },
+    { new: true }
   );
 
   if (deleteTask && updateGoal) {
     res.status(202).json({
-      message: "Task success remove, Goal updated"
+      message: "Task success remove, Goal updated",
+      goal: updateGoal
     });
   }
 };
 
 module.exports.updateTask = async (req, res) => {
-  const taskId = req.body.taskId;
+  const taskId = req.params.taskId;
   const fieldsToUpdate = req.body.fieldsToUpdate;
 
   try {
@@ -40,7 +47,10 @@ module.exports.updateTask = async (req, res) => {
     );
 
     res.status(202).json(updatedTask);
-  } catch (e) {
-    res.send(e);
+  } catch (err) {
+    res.status(404).json({
+      success: false,
+      message: err.message
+    });
   }
 };

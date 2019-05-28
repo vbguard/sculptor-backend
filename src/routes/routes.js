@@ -123,9 +123,6 @@ router.post("/register", userController.newUser);
  *                message:
  *                  type: string
  *                  example: "Incorrect email or password."
- *                userID:
- *                  type: boolean
- *                  example: false
  */
 router.post("/login", userController.login);
 // @GET /logout - logout
