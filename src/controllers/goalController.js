@@ -98,45 +98,102 @@ module.exports.deleteGoal = async (req, res) => {
 module.exports.updateGoal = (req, res) => {
   const goalId = req.params.goalId;
   const fieldsToUpdate = req.body;
+  /**
+   * TODO:
+   * GOAL UPDATE
+   ** - якщо є поле goalFieldsUpdate - оновити поля у цілі
+   *? - якщо є поле tasks - оновити поля у тасків по їхніх ID
+   *! - якщо  є поле newTasks - створити нові таски і !!! записати їх у цю ціль !!!
+   */
 
-  Goal.findByIdAndUpdate(
-    goalId,
-    { $set: fieldsToUpdate },
-    {
-      new: true
-    },
-    (err, updatedGoal) => {
+  if (!!fieldsToUpdate.goalFieldsUpdate) {
+    Goal.findByIdAndUpdate(
+      goalId,
+      { $set: fieldsToUpdate.goalFieldsUpdate },
+      (err, updatedGoal) => {
+        if (err) {
+          res.status(401).json({
+            success: false,
+            in: "Goal Update",
+            message: err.message
+          });
+        }
+      }
+    );
+  }
+
+  if (!!fieldsToUpdate.tasks) {
+    for (var i = 0, l = fieldsToUpdate.tasks.length; i < l; i++) {
+      Task.findByIdAndUpdate(
+        { _id: fieldsToUpdate.tasks[i].taskId },
+        { $set: fieldsToUpdate.tasks[i].updateFields },
+        function(err, records) {
+          if (err) {
+            res.status(401).json({
+              success: false,
+              in: "Task Update",
+              message: err.message
+            });
+          }
+        }
+      );
+    }
+  }
+
+  if (!!fieldsToUpdate.newTasks) {
+    Task.insertMany(fieldsToUpdate.newTasks, (err, newTasks) => {
       if (err) {
-        res.json({
+        res.status(401).json({
           success: false,
+          in: "Task Update",
           message: err.message
         });
       }
-      Goal.find({ userId: updatedGoal.userId }, (err, getUserGoals) => {
-        Task.populate(
-          getUserGoals,
-          { path: "goalTasks", model: "Task" },
-          function(err, goals) {
-            const goalsId = goals.map(goal => goal._id);
 
-            Task.find(
-              {
-                goalId: { $in: goalsId }
-              },
-              function(err, tasks) {
-                res.json({
-                  success: true,
-                  message: `Return updated Goals and Tasks`,
-                  goals: goals,
-                  tasks: tasks
-                });
-              }
-            );
+      const newTasksId = [...newTasks.map(task => task._id)];
+
+      Goal.updateOne(
+        { _id: goalId },
+        { $push: { goalTasks: newTasksId } },
+        (err, addToGoalNewTasks) => {
+          if (err) {
+            res.status(401).json({
+              success: false,
+              in: "Task Update",
+              message: err.message
+            });
           }
-        );
-      });
-    }
-  );
+          console.log(addToGoalNewTasks);
+        }
+      );
+    });
+  }
+
+  setTimeout(() => {
+    Goal.find({ userId: req.user._id }, (err, getUserGoals) => {
+      Task.populate(
+        getUserGoals,
+        { path: "goalTasks", model: "Task" },
+        function(err, goals) {
+          const goalsId = goals.map(goal => goal._id);
+
+          Task.find(
+            {
+              goalId: { $in: goalsId }
+            },
+            function(err, tasks) {
+              res.json({
+                success: true,
+                message: `Return updated Goals and Tasks`,
+                goals: goals,
+                tasks: tasks
+              });
+            }
+          );
+        }
+      );
+    });
+  }, 1000);
 };
 
 module.exports.getAllGoalsByOwnerId = async (req, res) => {
