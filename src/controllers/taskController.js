@@ -54,3 +54,33 @@ module.exports.updateTask = async (req, res) => {
     });
   }
 };
+
+module.exports.updateTaskActiveDates = async (req, res) => {
+  const taskId = req.params.taskId;
+  const newActiveDates = await req.body.taskActiveDates.map(el => ({
+    date: new Date(el.date).toISOString(),
+    isDone: false
+  }));
+
+  try {
+    Task.findByIdAndUpdate(
+      taskId,
+      { $set: { taskActiveDates: newActiveDates } },
+      {
+        new: true
+      },
+      (err, result) => {
+        if (err) {
+          console.log(err.message);
+        }
+        console.log(result);
+        res.status(202).json(result);
+      }
+    );
+  } catch (err) {
+    res.status(404).json({
+      success: false,
+      message: err.message
+    });
+  }
+};

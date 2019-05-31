@@ -587,6 +587,64 @@ router.put(
 /**
  * @swagger
  *
+ * /api/task/date/{taskId}:
+ *   put:
+ *     schemes:
+ *       - https
+ *     tags:
+ *       - TASK
+ *     summary: update Task by taskId
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: taskId
+ *         required: true
+ *         type: string
+ *         schema:
+ *            type: string
+ *         description: The task ID.
+ *       - in: header
+ *         name: Authorization
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjOTk2MmQ0ZGVlOWJhNDAyYzJhODZmOSIsImVtYWlsIjoiM3YyaWt0bzN3d3I0QHRlc3R0a2hpcy5jb20iLCJuYW1lIjoiVGVzdCBTdXBlIiwiaWF0IjoxNTUzNTU3NzI0LCJleHAiOjE1NTM1Njc3MjR9.Yuqy_d1NheW5osTAdzjSUrgAurZtXIZMjQnpTTufzhs"
+ *         description: Example in headers request in fields Auth - Bearer eyJhbGciOiJIUzI1N...
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *              - taskActiveDates
+ *             properties:
+ *               taskActiveDates:
+ *                  type: array
+ *                  example: ["insert all dates from picker"]
+ *     responses:
+ *       200:
+ *         description: Return json status updated Task
+ *         content:
+ *          application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *                success:
+ *                  type: boolean
+ *                  example: true
+ *                  default: true
+ *
+ */
+router.put(
+  "/task/dates/:taskId",
+  passport.authenticate("jwt", { session: false }),
+  taskController.updateTaskActiveDates
+);
+
+/**
+ * @swagger
+ *
  * /api/task/{taskId}:
  *   delete:
  *     schemes:
