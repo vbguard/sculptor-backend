@@ -699,7 +699,7 @@ router.delete(
  *       - https
  *     tags:
  *       - TASK ACTIVE DAYS
- *     summary: Delete task
+ *     summary: Delete taskActiveDay
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -757,7 +757,7 @@ router.delete(
  *       - https
  *     tags:
  *       - TASK ACTIVE DAYS
- *     summary: Delete task
+ *     summary: Change taskActiveDay status
  *     security:
  *       - bearerAuth: []
  *     parameters:
