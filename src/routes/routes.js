@@ -752,7 +752,7 @@ router.delete(
  * @swagger
  *
  * /api/task/active/{taskId}:
- *   delete:
+ *   put:
  *     schemes:
  *       - https
  *     tags:
