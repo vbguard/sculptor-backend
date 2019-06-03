@@ -1,23 +1,34 @@
 const Task = require("../models/taskModel.js");
 
-module.exports.deleteTaskActiveDay = async (res, req) => {
+module.exports.deleteTaskActiveDay = (req, res) => {
   const taskId = req.params.taskId;
   const taskActiveDayId = req.body.taskActiveDayId;
 
-  const deleteActiveDayInTask = await Task.findOneAndUpdate(
+  Task.update(
     { _id: taskId },
-    { $pull: { _id: taskActiveDayId } }
-  );
+    {
+      $pull: {
+        taskActiveDates: { _id: taskActiveDayId }
+      }
+    },
+    { multi: true },
+    (err, updatedTask) => {
+      if (err) {
+        es.status(404).json({
+          success: false,
+          message: err.message
+        });
+      }
 
-  if (deleteActiveDayInTask) {
-    res.status(202).json({
-      message: "TaskActive success remove, Task updated",
-      updatedTask: deleteActiveDayInTask
-    });
-  }
+      res.status(201).json({
+        message: "TaskActive success remove, Task updated",
+        updatedTask: updatedTask
+      });
+    }
+  );
 };
 
-module.exports.changeStatusTaskActiveDay = async (res, req) => {
+module.exports.changeStatusTaskActiveDay = async (req, res) => {
   const taskId = req.params.taskId;
   const taskActiveDayId = req.body.taskActiveDayId;
   const isDone = req.body.isDone;
@@ -32,7 +43,7 @@ module.exports.changeStatusTaskActiveDay = async (res, req) => {
   );
 
   if (changeStatusActiveDayInTask) {
-    res.status(202).json({
+    res.status(201).json({
       message: "TaskActive success updated, Task updated",
       updatedTask: changeStatusActiveDayInTask
     });
