@@ -1,38 +1,40 @@
 const Task = require("../models/taskModel.js");
-const TaskActive = require("../models/taskActiveModel.js");
 
-module.exports.deleteTaskActive = async (res, req) => {
-  const taskId = req.body.taskId;
-  const taskActiveId = req.body.taskActiveId;
+module.exports.deleteTaskActiveDay = async (res, req) => {
+  const taskId = req.params.taskId;
+  const taskActiveDayId = req.body.taskActiveDayId;
 
-  const deleteTask = await TaskActive.findByIdAndDelete(taskActiveId);
-  const updateGoal = await Task.findOneAndUpdate(
+  const deleteActiveDayInTask = await Task.findOneAndUpdate(
     { _id: taskId },
-    { $pull: { taskActiveDates: taskId } }
+    { $pull: { _id: taskActiveDayId } }
   );
 
-  if (deleteTask && updateGoal) {
+  if (deleteActiveDayInTask) {
     res.status(202).json({
-      message: "TaskActive success remove, Task updated"
+      message: "TaskActive success remove, Task updated",
+      updatedTask: deleteActiveDayInTask
     });
   }
 };
 
-module.exports.updateTaskActive = async (res, req) => {
-  const taskId = req.body.taskActiveId;
-  const fieldsToUpdate = req.body.fieldsToUpdate;
+module.exports.changeStatusTaskActiveDay = async (res, req) => {
+  const taskId = req.params.taskId;
+  const taskActiveDayId = req.body.taskActiveDayId;
+  const isDone = req.body.isDone;
 
-  try {
-    const updatedTaskActive = await TaskActive.findByIdAndUpdate(
-      taskActiveId,
-      { $set: fieldsToUpdate },
-      {
-        new: true
-      }
-    );
+  const changeStatusActiveDayInTask = await Task.findOneAndUpdate(
+    { _id: taskId },
+    { $set: { "taskActiveDates.$[elem].isDone": isDone } },
+    {
+      multi: true,
+      arrayFilters: [{ "elem._id": taskActiveDayId }]
+    }
+  );
 
-    res.status(202).json(updatedTaskActive);
-  } catch (e) {
-    res.send(e);
+  if (changeStatusActiveDayInTask) {
+    res.status(202).json({
+      message: "TaskActive success updated, Task updated",
+      updatedTask: changeStatusActiveDayInTask
+    });
   }
 };
