@@ -53,7 +53,7 @@ module.exports.login = (req, res) => {
         },
         err => {
           if (err) {
-            res.send(err);
+            res.status(400).json({ success: false, error: err.massage });
           }
 
           const token = jwt.sign(
@@ -76,8 +76,6 @@ module.exports.login = (req, res) => {
 module.exports.updatePass = async (req, res) => {
   const newPassword = req.body.newPassword;
   const id = req.body.id;
-
-  console.log(req.body);
 
   const userUpdate = await User.findById({ _id: id });
   userUpdate.password = newPassword;
