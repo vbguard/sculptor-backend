@@ -10,25 +10,32 @@ module.exports.getOneTask = async (req, res) => {
 };
 
 module.exports.deleteTask = async (req, res) => {
-  const taskId = req.params.taskId;
+  try {
+    const taskId = req.params.taskId;
 
-  const getTaskById = await Task.findById(taskId);
+    const getTaskById = await Task.findById(taskId);
 
-  if (getTaskById) {
-    console.log(getTaskById);
-  }
-  const deleteTask = await Task.findByIdAndDelete(taskId);
+    if (getTaskById) {
+      console.log(getTaskById);
+    }
+    const deleteTask = await Task.findByIdAndDelete(taskId);
 
-  const updateGoal = await Goal.findOneAndUpdate(
-    { _id: getTaskById.goalId },
-    { $pull: { goalTasks: taskId } },
-    { new: true }
-  );
+    const updateGoal = await Goal.findOneAndUpdate(
+      { _id: getTaskById.goalId },
+      { $pull: { goalTasks: taskId } },
+      { new: true }
+    );
 
-  if (deleteTask && updateGoal) {
-    res.status(202).json({
-      message: "Task success remove, Goal updated",
-      goal: updateGoal
+    if (deleteTask && updateGoal) {
+      res.status(202).json({
+        message: "Task success remove, Goal updated",
+        goal: updateGoal
+      });
+    }
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: error.message
     });
   }
 };
@@ -72,6 +79,7 @@ module.exports.updateTaskActiveDates = async (req, res) => {
       (err, result) => {
         if (err) {
           console.log(err.message);
+          throw err;
         }
         console.log(result);
         res.status(202).json(result);
