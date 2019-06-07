@@ -66,7 +66,7 @@ module.exports.updateTaskActiveDates = async (req, res) => {
   const taskId = req.params.taskId;
   const newActiveDates = await req.body.taskActiveDates.map(el => ({
     date: new Date(el.date).toISOString(),
-    isDone: false
+    isDone: el.isDone
   }));
 
   try {
