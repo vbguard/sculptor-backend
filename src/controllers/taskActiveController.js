@@ -38,9 +38,24 @@ module.exports.changeStatusTaskActiveDay = async (req, res) => {
     { $set: { "taskActiveDates.$[elem].isDone": isDone } },
     {
       multi: true,
+      new: true,
       arrayFilters: [{ "elem._id": taskActiveDayId }]
     }
   );
+
+  const setTaskIsComplete = changeStatusActiveDayInTask.taskActiveDates.filter(
+    day => !day.isDone
+  );
+
+  if (setTaskIsComplete.length > 0) {
+    changeStatusActiveDayInTask.isComplete = false;
+    changeStatusActiveDayInTask.save();
+  }
+
+  if (setTaskIsComplete.length === 0) {
+    changeStatusActiveDayInTask.isComplete = true;
+    changeStatusActiveDayInTask.save();
+  }
 
   if (changeStatusActiveDayInTask) {
     res.status(201).json({
