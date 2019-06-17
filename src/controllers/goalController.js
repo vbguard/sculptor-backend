@@ -12,8 +12,6 @@ module.exports.createNewGoal = async (req, res) => {
    *  - goalCompleted: Boolean, default: false
    *  - userId: String, required: true
    */
-  console.log(req);
-  console.log(req.body);
   const data = req.body;
 
   const goalDataNew = {
@@ -37,7 +35,6 @@ module.exports.createNewGoal = async (req, res) => {
     // .insertMany - метод для створення багато документів у відповідній колекції
     // приймає першим параметром масив або об'єкт данних «Array|Object|*»
     await Task.insertMany(data.goalTasks, (err, docs) => {
-      console.log(docs);
       newGoal.goalTasks = [...docs.map(task => task._id)];
       newGoal.save((err, goal) => {
         if (err) {
