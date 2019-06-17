@@ -13,8 +13,6 @@ module.exports.newUser = (req, res) => {
 
   const newUser = new User(data);
 
-  console.log(newUser);
-
   newUser.save((error, doc) => {
     if (error) {
       res.status(400).json({
