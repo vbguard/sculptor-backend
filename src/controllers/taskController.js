@@ -70,21 +70,35 @@ module.exports.updateTaskActiveDates = async (req, res) => {
   }));
 
   try {
-    Task.findByIdAndUpdate(
+    const updateTaskActiveDays = await Task.findByIdAndUpdate(
       taskId,
       { $set: { taskActiveDates: newActiveDates } },
       {
         new: true
-      },
-      (err, result) => {
-        if (err) {
-          console.log(err.message);
-          throw err;
-        }
-        console.log(result);
-        res.status(202).json(result);
       }
     );
+
+    const setTaskIsComplete = updateTaskActiveDays.taskActiveDates.filter(
+      day => !day.isDone
+    );
+
+    if (setTaskIsComplete.length > 0) {
+      changeStatusActiveDayInTask.isComplete = false;
+      changeStatusActiveDayInTask.save();
+    }
+
+    if (setTaskIsComplete.length === 0) {
+      changeStatusActiveDayInTask.isComplete = true;
+      changeStatusActiveDayInTask.save();
+    }
+
+    if (updateTaskActiveDays) {
+      res.status(201).json({
+        success: true,
+        message: "Task success updated",
+        updatedTask: changeStatusActiveDayInTask
+      });
+    }
   } catch (err) {
     res.status(404).json({
       success: false,
