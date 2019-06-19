@@ -74,7 +74,8 @@ module.exports.updateTaskActiveDates = async (req, res) => {
       taskId,
       { $set: { taskActiveDates: newActiveDates } },
       {
-        new: true
+        new: true,
+        multi: true
       }
     );
 
@@ -83,20 +84,20 @@ module.exports.updateTaskActiveDates = async (req, res) => {
     );
 
     if (setTaskIsComplete.length > 0) {
-      changeStatusActiveDayInTask.isComplete = false;
-      changeStatusActiveDayInTask.save();
+      updateTaskActiveDays.isComplete = false;
+      updateTaskActiveDays.save();
     }
 
     if (setTaskIsComplete.length === 0) {
-      changeStatusActiveDayInTask.isComplete = true;
-      changeStatusActiveDayInTask.save();
+      updateTaskActiveDays.isComplete = true;
+      updateTaskActiveDays.save();
     }
 
     if (updateTaskActiveDays) {
       res.status(201).json({
         success: true,
         message: "Task success updated",
-        updatedTask: changeStatusActiveDayInTask
+        updatedTask: updateTaskActiveDays
       });
     }
   } catch (err) {
