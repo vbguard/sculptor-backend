@@ -43,13 +43,28 @@ module.exports.deleteTask = async (req, res) => {
 module.exports.updateTask = async (req, res) => {
   const taskId = req.params.taskId;
   const fieldsToUpdate = req.body.fieldsToUpdate;
+  console.log(fieldsToUpdate);
 
   try {
-    const updatedTask = await Task.findByIdAndUpdate(
+    Task.findByIdAndUpdate(
       taskId,
       { $set: fieldsToUpdate },
       {
         new: true
+      },
+      (err, doc) => {
+        if (err) {
+          res.status(404).json({
+            success: false,
+            error: err.message
+          });
+        }
+
+        res.status(200).json({
+          success: true,
+          task: doc,
+          tyta: true
+        });
       }
     );
 
