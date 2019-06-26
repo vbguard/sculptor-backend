@@ -26,21 +26,39 @@ module.exports.deleteTask = async (req, res) => {
   }
 };
 
-module.exports.updateTask = async (req, res) => {
+module.exports.updateTask = (req, res) => {
   const taskId = req.body.taskId;
   const fieldsToUpdate = req.body.fieldsToUpdate;
+  console.log(fieldsToUpdate);
 
   try {
-    const updatedTask = await Task.findByIdAndUpdate(
+    Task.findByIdAndUpdate(
       taskId,
       { $set: fieldsToUpdate },
       {
         new: true
+      },
+      (err, doc) => {
+        if (err) {
+          res.status(404).json({
+            success: false,
+            error: err.message
+          });
+        }
+
+        res.status(200).json({
+          success: true,
+          task: doc,
+          tyta: true
+        });
       }
     );
 
-    res.status(202).json(updatedTask);
-  } catch (e) {
-    res.send(e);
+    res.status(202).json({
+      success: true,
+      task: updatedTask
+    });
+  } catch (error) {
+    res.status(200).json({ error: error.message });
   }
 };
