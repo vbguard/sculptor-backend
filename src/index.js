@@ -43,6 +43,11 @@ require("./modules/passport")(passport);
 swaggerDoc(app);
 
 app.use("/", express.static("public"));
+app.use("/login", express.static("public"));
+app.use("/registration", express.static("public"));
+app.use("/dashboard", express.static("public"));
+app.use("/results", express.static("public"));
+app.use("/information", express.static("public"));
 
 app.use("/api", router);
 
