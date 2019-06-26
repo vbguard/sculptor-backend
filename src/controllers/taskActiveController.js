@@ -1,38 +1,81 @@
 const Task = require("../models/taskModel.js");
-const TaskActive = require("../models/taskActiveModel.js");
 
-module.exports.deleteTaskActive = async (res, req) => {
-  const taskId = req.body.taskId;
-  const taskActiveId = req.body.taskActiveId;
+module.exports.deleteTaskActiveDay = async (req, res) => {
+  const taskId = req.params.taskId;
+  const taskActiveDayId = req.body.taskActiveDayId;
+  try {
+    const updateTask = await Task.findOneAndUpdate(
+      { _id: taskId },
+      {
+        $pull: {
+          taskActiveDates: { _id: taskActiveDayId }
+        }
+      },
+      { multi: true, new: true }
+    );
 
-  const deleteTask = await TaskActive.findByIdAndDelete(taskActiveId);
-  const updateGoal = await Task.findOneAndUpdate(
-    { _id: taskId },
-    { $pull: { taskActiveDates: taskId } }
-  );
+    const setTaskIsComplete = updateTask.taskActiveDates.filter(
+      day => !day.isDone
+    );
 
-  if (deleteTask && updateGoal) {
-    res.status(202).json({
-      message: "TaskActive success remove, Task updated"
+    if (setTaskIsComplete.length > 0) {
+      updateTask.isComplete = false;
+      updateTask.save();
+    }
+
+    if (setTaskIsComplete.length === 0) {
+      updateTask.isComplete = true;
+      updateTask.save();
+    }
+
+    if (updateTask) {
+      res.status(201).json({
+        success: true,
+        message: "TaskActive success updated, Task updated",
+        updatedTask: updateTask
+      });
+    }
+  } catch (error) {
+    res.status(404).json({
+      success: false,
+      message: error.message
     });
   }
 };
 
-module.exports.updateTaskActive = async (res, req) => {
-  const taskId = req.body.taskActiveId;
-  const fieldsToUpdate = req.body.fieldsToUpdate;
+module.exports.changeStatusTaskActiveDay = async (req, res) => {
+  const taskId = req.params.taskId;
+  const taskActiveDayId = req.body.taskActiveDayId;
+  const isDone = req.body.isDone;
 
-  try {
-    const updatedTaskActive = await TaskActive.findByIdAndUpdate(
-      taskActiveId,
-      { $set: fieldsToUpdate },
-      {
-        new: true
-      }
-    );
+  const changeStatusActiveDayInTask = await Task.findOneAndUpdate(
+    { _id: taskId },
+    { $set: { "taskActiveDates.$[elem].isDone": isDone } },
+    {
+      multi: true,
+      new: true,
+      arrayFilters: [{ "elem._id": taskActiveDayId }]
+    }
+  );
 
-    res.status(202).json(updatedTaskActive);
-  } catch (e) {
-    res.send(e);
+  const setTaskIsComplete = changeStatusActiveDayInTask.taskActiveDates.filter(
+    day => !day.isDone
+  );
+
+  if (setTaskIsComplete.length > 0) {
+    changeStatusActiveDayInTask.isComplete = false;
+    changeStatusActiveDayInTask.save();
+  }
+
+  if (setTaskIsComplete.length === 0) {
+    changeStatusActiveDayInTask.isComplete = true;
+    changeStatusActiveDayInTask.save();
+  }
+
+  if (changeStatusActiveDayInTask) {
+    res.status(201).json({
+      message: "TaskActive success updated, Task updated",
+      updatedTask: changeStatusActiveDayInTask
+    });
   }
 };

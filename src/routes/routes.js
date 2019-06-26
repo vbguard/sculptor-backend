@@ -4,6 +4,7 @@ const { authCheck } = require("../middleware/authCheck.js");
 const userController = require("../controllers/userController.js");
 const goalController = require("../controllers/goalController.js");
 const taskController = require("../controllers/taskController.js");
+const taskActiveController = require("../controllers/taskActiveController");
 const passport = require("passport");
 
 // Some config for swagger
@@ -123,9 +124,6 @@ router.post("/register", userController.newUser);
  *                message:
  *                  type: string
  *                  example: "Incorrect email or password."
- *                userID:
- *                  type: boolean
- *                  example: false
  */
 router.post("/login", userController.login);
 // @GET /logout - logout
@@ -590,6 +588,64 @@ router.put(
 /**
  * @swagger
  *
+ * /api/task/date/{taskId}:
+ *   put:
+ *     schemes:
+ *       - https
+ *     tags:
+ *       - TASK
+ *     summary: update Task by taskId
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: taskId
+ *         required: true
+ *         type: string
+ *         schema:
+ *            type: string
+ *         description: The task ID.
+ *       - in: header
+ *         name: Authorization
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjOTk2MmQ0ZGVlOWJhNDAyYzJhODZmOSIsImVtYWlsIjoiM3YyaWt0bzN3d3I0QHRlc3R0a2hpcy5jb20iLCJuYW1lIjoiVGVzdCBTdXBlIiwiaWF0IjoxNTUzNTU3NzI0LCJleHAiOjE1NTM1Njc3MjR9.Yuqy_d1NheW5osTAdzjSUrgAurZtXIZMjQnpTTufzhs"
+ *         description: Example in headers request in fields Auth - Bearer eyJhbGciOiJIUzI1N...
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *              - taskActiveDates
+ *             properties:
+ *               taskActiveDates:
+ *                  type: array
+ *                  example: ["insert all dates from picker"]
+ *     responses:
+ *       200:
+ *         description: Return json status updated Task
+ *         content:
+ *          application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *                success:
+ *                  type: boolean
+ *                  example: true
+ *                  default: true
+ *
+ */
+router.put(
+  "/task/dates/:taskId",
+  passport.authenticate("jwt", { session: false }),
+  taskController.updateTaskActiveDates
+);
+
+/**
+ * @swagger
+ *
  * /api/task/{taskId}:
  *   delete:
  *     schemes:
@@ -632,6 +688,125 @@ router.delete(
   "/task/:taskId",
   passport.authenticate("jwt", { session: false }),
   taskController.deleteTask
+);
+
+/**
+ * @swagger
+ *
+ * /api/task/active/{taskId}:
+ *   delete:
+ *     schemes:
+ *       - https
+ *     tags:
+ *       - TASK ACTIVE DAYS
+ *     summary: Delete taskActiveDay
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: taskId
+ *         required: true
+ *         type: string
+ *         schema:
+ *            type: string
+ *         description: The task ID.
+ *       - in: header
+ *         name: Authorization
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjOTk2MmQ0ZGVlOWJhNDAyYzJhODZmOSIsImVtYWlsIjoiM3YyaWt0bzN3d3I0QHRlc3R0a2hpcy5jb20iLCJuYW1lIjoiVGVzdCBTdXBlIiwiaWF0IjoxNTUzNTU3NzI0LCJleHAiOjE1NTM1Njc3MjR9.Yuqy_d1NheW5osTAdzjSUrgAurZtXIZMjQnpTTufzhs"
+ *         description: Example in headers request in fields Auth - Bearer eyJhbGciOiJIUzI1N...
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *              - taskActiveDayId
+ *             properties:
+ *               taskActiveDayId:
+ *                  type: string
+ *                  example: "write taskActiveDayId for delete"
+ *     responses:
+ *       200:
+ *         description: Return json status removed Task
+ *         content:
+ *          application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *                success:
+ *                  type: boolean
+ *                  example: true
+ *                  default: true
+ *
+ */
+router.delete(
+  "/task/active/:taskId",
+  passport.authenticate("jwt", { session: false }),
+  taskActiveController.deleteTaskActiveDay
+);
+
+/**
+ * @swagger
+ *
+ * /api/task/active/{taskId}:
+ *   put:
+ *     schemes:
+ *       - https
+ *     tags:
+ *       - TASK ACTIVE DAYS
+ *     summary: Change taskActiveDay status
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: taskId
+ *         required: true
+ *         type: string
+ *         schema:
+ *            type: string
+ *         description: The task ID.
+ *       - in: header
+ *         name: Authorization
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjOTk2MmQ0ZGVlOWJhNDAyYzJhODZmOSIsImVtYWlsIjoiM3YyaWt0bzN3d3I0QHRlc3R0a2hpcy5jb20iLCJuYW1lIjoiVGVzdCBTdXBlIiwiaWF0IjoxNTUzNTU3NzI0LCJleHAiOjE1NTM1Njc3MjR9.Yuqy_d1NheW5osTAdzjSUrgAurZtXIZMjQnpTTufzhs"
+ *         description: Example in headers request in fields Auth - Bearer eyJhbGciOiJIUzI1N...
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *              - taskActiveDayId
+ *             properties:
+ *               taskActiveDayId:
+ *                  type: string
+ *                  example: "write taskActiveDayId for delete"
+ *               isDone:
+ *                  type: boolean
+ *                  example: true
+ *     responses:
+ *       200:
+ *         description: Return json status removed Task
+ *         content:
+ *          application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *                success:
+ *                  type: boolean
+ *                  example: true
+ *                  default: true
+ *
+ */
+router.put(
+  "/task/active/:taskId",
+  passport.authenticate("jwt", { session: false }),
+  taskActiveController.changeStatusTaskActiveDay
 );
 
 module.exports = router;

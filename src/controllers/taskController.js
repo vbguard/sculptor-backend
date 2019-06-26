@@ -10,24 +10,38 @@ module.exports.getOneTask = async (req, res) => {
 };
 
 module.exports.deleteTask = async (req, res) => {
-  const taskId = req.body.taskId;
-  const goalId = req.body.goalId;
+  try {
+    const taskId = req.params.taskId;
 
-  const deleteTask = await Task.findByIdAndDelete(taskId);
-  const updateGoal = await Goal.findOneAndUpdate(
-    { _id: goalId },
-    { $pull: { goalTasks: taskId } }
-  );
+    const getTaskById = await Task.findById(taskId);
 
-  if (deleteTask && updateGoal) {
-    res.status(202).json({
-      message: "Task success remove, Goal updated"
+    if (getTaskById) {
+      console.log(getTaskById);
+    }
+    const deleteTask = await Task.findByIdAndDelete(taskId);
+
+    const updateGoal = await Goal.findOneAndUpdate(
+      { _id: getTaskById.goalId },
+      { $pull: { goalTasks: taskId } },
+      { new: true }
+    );
+
+    if (deleteTask && updateGoal) {
+      res.status(202).json({
+        message: "Task success remove, Goal updated",
+        goal: updateGoal
+      });
+    }
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: error.message
     });
   }
 };
 
-module.exports.updateTask = (req, res) => {
-  const taskId = req.body.taskId;
+module.exports.updateTask = async (req, res) => {
+  const taskId = req.params.taskId;
   const fieldsToUpdate = req.body.fieldsToUpdate;
   console.log(fieldsToUpdate);
 
@@ -54,11 +68,57 @@ module.exports.updateTask = (req, res) => {
       }
     );
 
-    res.status(202).json({
-      success: true,
-      task: updatedTask
+    res.status(202).json(updatedTask);
+  } catch (err) {
+    res.status(404).json({
+      success: false,
+      message: err.message
     });
-  } catch (error) {
-    res.status(200).json({ error: error.message });
+  }
+};
+
+module.exports.updateTaskActiveDates = async (req, res) => {
+  const taskId = req.params.taskId;
+  const newActiveDates = await req.body.taskActiveDates.map(el => ({
+    date: new Date(el.date).toISOString(),
+    isDone: el.isDone
+  }));
+
+  try {
+    const updateTaskActiveDays = await Task.findByIdAndUpdate(
+      taskId,
+      { $set: { taskActiveDates: newActiveDates } },
+      {
+        new: true,
+        multi: true
+      }
+    );
+
+    const setTaskIsComplete = updateTaskActiveDays.taskActiveDates.filter(
+      day => !day.isDone
+    );
+
+    if (setTaskIsComplete.length > 0) {
+      updateTaskActiveDays.isComplete = false;
+      updateTaskActiveDays.save();
+    }
+
+    if (setTaskIsComplete.length === 0) {
+      updateTaskActiveDays.isComplete = true;
+      updateTaskActiveDays.save();
+    }
+
+    if (updateTaskActiveDays) {
+      res.status(201).json({
+        success: true,
+        message: "Task success updated",
+        updatedTask: updateTaskActiveDays
+      });
+    }
+  } catch (err) {
+    res.status(404).json({
+      success: false,
+      message: err.message
+    });
   }
 };

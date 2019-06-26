@@ -4,7 +4,6 @@ const app = express();
 const logger = require("morgan");
 const cors = require("cors");
 const passport = require("passport");
-
 const swaggerDoc = require("./modules/swaggerDoc");
 const mongoose = require("mongoose");
 
@@ -44,6 +43,11 @@ require("./modules/passport")(passport);
 swaggerDoc(app);
 
 app.use("/", express.static("public"));
+app.use("/login", express.static("public"));
+app.use("/registration", express.static("public"));
+app.use("/dashboard", express.static("public"));
+app.use("/results", express.static("public"));
+app.use("/information", express.static("public"));
 
 app.use("/api", router);
 
