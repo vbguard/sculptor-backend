@@ -8,7 +8,8 @@ require("dotenv").config();
 module.exports.newUser = (req, res) => {
   const data = {
     email: req.body.email,
-    password: req.body.password
+    password: req.body.password,
+    name: req.body.name
   };
 
   const newUser = new User(data);
