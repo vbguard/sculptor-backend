@@ -23,7 +23,8 @@ module.exports.newUser = (req, res) => {
     res.status(201).json({
       success: true,
       message: "User successful created",
-      userId: "doc._id"
+      userId: doc._id,
+      userName: doc.name
     });
   });
 };
@@ -63,6 +64,7 @@ module.exports.login = (req, res) => {
             success: true,
             message: "Success Login",
             userId: user._id,
+            userName: user.name,
             token: token
           });
         }
